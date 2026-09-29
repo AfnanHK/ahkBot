@@ -37,36 +37,25 @@ async function getSummary(telegramId) {
     const user = await getOrCreateUser(telegramId);
 
     const incomeRes = await db.query(
-        `SELECT COALESCE(SUM(amount), 0) AS total FROM transactions
-         WHERE telegram_id = $1 AND type IN ('income', 'salary')
-         AND created_at >= $2`,
-        [telegramId, user.period_start]
+        "SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE telegram_id = $1 AND type IN ('income', 'salary')",
+        [telegramId]
     );
     const expenseRes = await db.query(
-        `SELECT COALESCE(SUM(amount), 0) AS total FROM transactions
-         WHERE telegram_id = $1 AND type = 'expense'
-         AND created_at >= $2`,
-        [telegramId, user.period_start]
+        "SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE telegram_id = $1 AND type = 'expense'",
+        [telegramId]
     );
 
     const totalIncome = parseFloat(incomeRes.rows[0].total);
     const totalExpense = parseFloat(expenseRes.rows[0].total);
+    const balance = totalIncome - totalExpense;
 
     return {
         currency: user.currency,
         salary: parseFloat(user.monthly_salary),
         totalIncome,
-	        totalExpense,
-        balance: totalIncome - totalExpense
+        totalExpense,
+        balance
     };
-}
-
-async function resetPeriod(telegramId) {
-    await getOrCreateUser(telegramId);
-    await db.query(
-        'UPDATE users SET period_start = NOW(), monthly_salary = 0 WHERE telegram_id = $1',
-        [telegramId]
-    );
 }
 
 async function getMonthlyDetails(telegramId, month = null, year = null) {
@@ -121,6 +110,5 @@ module.exports = {
     getSummary,
     getMonthlyDetails,
     setTarget,
-    getTargets,
-    resetPeriod
+    getTargets
 };

@@ -14,6 +14,7 @@ module.exports = {
 • \`/export <excel|pdf>\` - Download Laporan (.xlsx / .pdf)
 
 🎯 *Target & Pengaturan:*
+• \`/reset\` - Mulai periode baru dari Rp0
 • \`/target\` - Cek semua target
 • \`/target <nama> <jumlah>\` - Tambah target baru
 • \`/matauang <IDR|USD>\` - Ubah mata uang`;
