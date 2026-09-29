@@ -12,6 +12,7 @@
   "type": "commonjs",
   "dependencies": {
     "dotenv": "^18.0.4",
+    "pg": "^8.23.0",
     "telegraf": "^4.16.3"
   }
 }
