@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: finance_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: finance_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+  bot:
+    build: .
+    container_name: finance_bot
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN}
+      PGURI: postgres://postgres:password@postgres:5432/finance_db
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      PORT: 3000
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:
